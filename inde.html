@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MP88 | Vinyl Player</title>
+
+    <!-- ===== GOOGLE FONTS ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Special+Elite&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+                   🌙 RESET & ROOT
+                ============================================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            /* Fonts */
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-vintage: 'Cinzel Decorative', serif;
+            --font-aesthetic: 'Playfair Display', serif;
+            --font-typewriter: 'Special Elite', cursive;
+            
+            /* Dark Royal (Default) */
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-hover: rgba(255, 255, 255, 0.06);
+            --border-glass: rgba(212, 175, 55, 0.12);
+            --text-primary: #f3efe6;
+            --text-secondary: rgba(243, 239, 230, 0.5);
+            --text-muted: rgba(243, 239, 230, 0.2);
+            --accent: #d4af37;
+            --accent-glow: rgba(212, 175, 55, 0.15);
+            --accent-hover: #e6c55c;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --radius: 24px;
+            --transition: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            
+            --vinyl-bg: #0d0d0d;
+            --vinyl-label: #2c1d0c;
+        }
+
+        /* ============================================================
+                   ☀️ LIGHT THEME
+                ============================================================ */
+        [data-theme="light"] {
+            --bg-primary: #f7f4ed;
+            --bg-secondary: #ffffff;
+            --bg-card: rgba(255, 255, 255, 0.75);
+            --bg-hover: rgba(0, 0, 0, 0.04);
+            --border-glass: rgba(139, 115, 85, 0.15);
+            --text-primary: #2c251e;
+            --text-secondary: rgba(44, 37, 30, 0.5);
+            --text-muted: rgba(44, 37, 30, 0.25);
+            --accent: #8c6d36;
+            --accent-glow: rgba(140, 109, 54, 0.12);
+            --accent-hover: #6e542a;
+            --shadow: 0 20px 60px rgba(44, 37, 30, 0.08);
+            --vinyl-bg: #1a1818;
+            --vinyl-label: #4a3b32;
+        }
+
+        /* ============================================================
+                   🌊 OCEAN THEME
+                ============================================================ */
+        [data-theme="ocean"] {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0f2040;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-hover: rgba(255, 255, 255, 0.06);
+            --border-glass: rgba(100, 200, 255, 0.10);
+            --text-primary: #e8f4f8;
+            --text-secondary: rgba(100, 200, 255, 0.45);
+            --text-muted: rgba(100, 200, 255, 0.18);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.12);
+            --accent-hover: #7dd3fc;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            --vinyl-bg: #08101a;
+            --vinyl-label: #1a3a5a;
+        }
+
+        /* ============================================================
+                   🌅 SUNSET THEME
+                ============================================================ */
+        [data-theme="sunset"] {
+            --bg-primary: #1a0a0f;
+            --bg-secondary: #2a1218;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-hover: rgba(255, 255, 255, 0.06);
+            --border-glass: rgba(255, 150, 100, 0.10);
+            --text-primary: #f8ece8;
+            --text-secondary: rgba(255, 150, 100, 0.45);
+            --text-muted: rgba(255, 150, 100, 0.18);
+            --accent: #f97316;
+            --accent-glow: rgba(249, 115, 22, 0.12);
+            --accent-hover: #fb923c;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            --vinyl-bg: #140808;
+            --vinyl-label: #3a2a28;
+        }
+
+        /* ============================================================
+                   🌍 APP BODY
+                ============================================================ */
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background-color var(--transition), color var(--transition);
+            -webkit-user-select: none;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        /* ============================================================
+                   🪟 MAIN CONTAINER
+                ============================================================ */
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background-color: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius);
+            padding: 32px 24px 20px 24px;
+            box-shadow: var(--shadow);
+            transition: background-color var(--transition), border-color var(--transition), box-shadow var(--transition);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            max-height: 95vh;
+        }
+
+        /* ============================================================
+                   📋 HEADER
+                ============================================================ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        /* The Animated Logo */
+        .header h1 {
+            font-family: var(--font-vintage);
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 0;
+            
+            /* Gradient Shine Effect */
+            background: linear-gradient(
+                120deg, 
+                var(--accent) 0%, 
+                var(--text-primary) 50%, 
+                var(--accent) 100%
+            );
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 4s linear infinite;
+            
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .header h1 .badge {
+            font-family: var(--font-typewriter);
+            font-size: 10px;
+            background-color: var(--bg-hover);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            -webkit-text-fill-color: var(--text-secondary); /* Reset text color for badge */
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-actions button {
+            background-color: var(--bg-hover);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .header-actions button:active {
+            transform: scale(0.9);
+        }
+
+        .header-actions button:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            background-color: var(--accent-glow);
+        }
+
+        /* ============================================================
+                   📁 UPLOAD
+                ============================================================ */
+        .upload-area {
+            border: 2px dashed var(--border-glass);
+            border-radius: var(--radius);
+            padding: 32px 20px;
+            text-align: center;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background-color: var(--bg-hover);
+        }
+
+        .upload-area:active {
+            transform: scale(0.98);
+        }
+
+        .upload-area svg {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .upload-area p {
+            font-family: var(--font-main);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .upload-area strong {
+            color: var(--text-primary);
+            font-family: var(--font-aesthetic);
+            font-size: 16px;
+            font-style: italic;
+        }
+
+        .upload-area .sub {
+            font-family: var(--font-typewriter);
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        /* ============================================================
+                   💿 VINYL PLAYER
+                ============================================================ */
+        .player {
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .player.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .vinyl-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+            position: relative;
+            padding: 10px;
+        }
+
+        .vinyl {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background-color: var(--vinyl-bg);
+            background-image: 
+                repeating-radial-gradient(
+                    circle at center, 
+                    rgba(255,255,255,0.01) 0, 
+                    rgba(255,255,255,0.01) 2px, 
+                    transparent 2px, 
+                    transparent 4px
+                );
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            animation: spin 5s linear infinite;
+            animation-play-state: paused;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+        }
+
+        .vinyl.spinning {
+            animation-play-state: running;
+        }
+
+        .vinyl .label {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            background: radial-gradient(circle at top left, var(--accent), var(--vinyl-label));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            padding: 8px;
+            position: relative;
+        }
+
+        .vinyl .label::before {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-color: var(--bg-primary);
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.3);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .vinyl .label .title {
+            font-family: var(--font-vintage);
+            font-size: 10px;
+            color: rgba(255,255,255,0.9);
+            font-weight: bold;
+            line-height: 1.2;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 24px; 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== TONE ARM ===== */
+        .tone-arm {
+            position: absolute;
+            top: 5%;
+            right: 15%;
+            width: 70px;
+            height: 6px;
+            background: linear-gradient(90deg, #ccc, #888);
+            border-radius: 10px;
+            transform-origin: right center;
+            transform: rotate(-50deg);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        
+        .tone-arm::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: -6px;
+            width: 20px;
+            height: 18px;
+            background: #222;
+            border-radius: 4px;
+            border: 1px solid #555;
+        }
+
+        .tone-arm.active {
+            transform: rotate(-15deg);
+        }
+
+        /* ============================================================
+                   🎵 SONG INFO
+                ============================================================ */
+        .song-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .song-info h3 {
+            font-family: var(--font-aesthetic);
+            font-size: 22px;
+            font-style: italic;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 10px;
+            color: var(--text-primary);
+        }
+
+        /* ============================================================
+                   📊 PROGRESS (INTERACTIVE)
+                ============================================================ */
+        .progress-container {
+            margin: 10px 0 24px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px; /* Slightly thicker for easier tapping */
+            background-color: var(--bg-hover);
+            border-radius: 6px;
+            position: relative;
+            cursor: pointer; /* Indicates it's clickable */
+            transition: height 0.2s ease;
+        }
+        
+        .progress-bar:hover {
+            height: 8px; /* Expands slightly when hovering */
+        }
+
+        .progress-bar .progress {
+            width: 0%;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 6px;
+            position: relative;
+            pointer-events: none;
+        }
+
+        /* Little dot on the progress bar */
+        .progress-bar .progress::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%) scale(0);
+            width: 12px;
+            height: 12px;
+            background-color: var(--text-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-glow);
+            transition: transform 0.2s ease;
+        }
+
+        .progress-bar:hover .progress::after {
+            transform: translateY(-50%) scale(1);
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-typewriter);
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+
+        /* ============================================================
+                   🎛️ CONTROLS
+                ============================================================ */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .controls button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .controls button:active {
+            transform: scale(0.85);
+            background-color: var(--bg-hover);
+        }
+
+        .controls button.active-btn {
+            color: var(--accent);
+        }
+
+        .controls button.play-btn {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+            width: 65px;
+            height: 65px;
+            box-shadow: 0 10px 25px var(--accent-glow);
+        }
+
+        .controls button.play-btn:active {
+            transform: scale(0.9);
+            background-color: var(--accent-hover);
+        }
+
+        /* ============================================================
+                   📋 PLAYLIST
+                ============================================================ */
+        .playlist-section {
+            flex: 1;
+            border-top: 1px solid var(--border-glass);
+            padding-top: 16px;
+            overflow-y: auto;
+            max-height: 180px;
+        }
+
+        .playlist-section::-webkit-scrollbar { width: 4px; }
+        .playlist-section::-webkit-scrollbar-track { background: transparent; }
+        .playlist-section::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 10px; }
+
+        .playlist {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            gap: 12px;
+        }
+
+        .playlist-item:active {
+            transform: scale(0.98);
+        }
+
+        .playlist-item.active {
+            background-color: var(--bg-hover);
+        }
+
+        .playlist-item .title {
+            flex: 1;
+            font-family: var(--font-main);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .playlist-item .duration {
+            font-family: var(--font-typewriter);
+            font-size: 11px;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .playlist-item.active .title {
+            color: var(--accent);
+        }
+
+        /* ============================================================
+                   📜 COPYRIGHT (FOOTER)
+                ============================================================ */
+        .copyright {
+            font-family: var(--font-typewriter);
+            font-size: 9px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 20px;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            text-transform: uppercase;
+        }
+
+        /* ============================================================
+                   📱 RESPONSIVE
+                ============================================================ */
+        @media (max-width: 480px) {
+            body { padding: 0; }
+            .container { 
+                border-radius: 0; 
+                border: none;
+                max-height: 100vh;
+                height: 100vh;
+                padding: 40px 20px 20px;
+            }
+            .vinyl { width: 240px; height: 240px; }
+            .playlist-section { max-height: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <div class="header">
+            <h1>
+                MP88 <span class="badge">Offline</span>
+            </h1>
+            <div class="header-actions">
+                <button id="themeToggle" title="Change Theme">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+                </button>
+                <button id="clearBtn" title="Clear Music">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== UPLOAD ===== -->
+        <div class="upload-area" id="uploadArea">
+            <label for="fileInput" style="cursor: pointer; display: block;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <p>Drop your melodies or <strong>Browse</strong></p>
+                <p class="sub">MP3 • WAV • FLAC</p>
+            </label>
+            <input type="file" id="fileInput" multiple accept="audio/*" />
+        </div>
+
+        <!-- ===== PLAYER ===== -->
+        <div class="player" id="player">
+
+            <div class="vinyl-container">
+                <div class="vinyl" id="vinyl">
+                    <div class="label">
+                        <span class="title" id="vinylTitle">Track</span>
+                    </div>
+                </div>
+                <div class="tone-arm" id="toneArm"></div>
+            </div>
+
+            <div class="song-info">
+                <h3 id="currentTitle">No song selected</h3>
+            </div>
+
+            <!-- INTERACTIVE Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBarContainer">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="time-info">
+                    <span id="currentTime">0:00</span>
+                    <span id="totalTime">0:00</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <!-- Shuffle -->
+                <button id="shuffleBtn">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>
+                </button>
+                <!-- Previous -->
+                <button id="prevBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <!-- Play/Pause -->
+                <button class="play-btn" id="playBtn">
+                    <svg id="iconPlay" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="display: block; margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="iconPause" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <!-- Next -->
+                <button id="nextBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+                <!-- Repeat/Loop -->
+                <button id="repeatBtn">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                </button>
+            </div>
+
+            <!-- Playlist -->
+            <div class="playlist-section">
+                <div class="playlist" id="playlist"></div>
+            </div>
+            
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <div class="copyright">© 2026 mohamed005cheikh@gmail.com | by MC</div>
+
+    </div>
+
+    <script>
+        const state = {
+            playlist: [],
+            currentIndex: 0,
+            isPlaying: false,
+            isShuffled: false,
+            isRepeated: false,
+            themes: ['dark', 'light', 'ocean', 'sunset']
+        };
+
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const player = document.getElementById('player');
+        const playlistEl = document.getElementById('playlist');
+        
+        const currentTitle = document.getElementById('currentTitle');
+        const vinylTitle = document.getElementById('vinylTitle');
+        const vinyl = document.getElementById('vinyl');
+        const toneArm = document.getElementById('toneArm');
+        
+        const progressBarContainer = document.getElementById('progressBarContainer');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('currentTime');
+        const totalTimeEl = document.getElementById('totalTime');
+        
+        const playBtn = document.getElementById('playBtn');
+        const iconPlay = document.getElementById('iconPlay');
+        const iconPause = document.getElementById('iconPause');
+        
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const repeatBtn = document.getElementById('repeatBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const themeToggle = document.getElementById('themeToggle');
+
+        let audio = new Audio();
+
+        // Theme Handling
+        let themeIndex = state.themes.indexOf(localStorage.getItem('theme') || 'dark');
+        if (themeIndex === -1) themeIndex = 0;
+        document.documentElement.setAttribute('data-theme', state.themes[themeIndex]);
+
+        themeToggle.addEventListener('click', () => {
+            themeIndex = (themeIndex + 1) % state.themes.length;
+            const newTheme = state.themes[themeIndex];
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // File Uploading
+        function handleFiles(files) {
+            const audioFiles = Array.from(files).filter(f => f.type.startsWith('audio/'));
+            if (!audioFiles.length) return;
+
+            uploadArea.style.display = 'none';
+            player.classList.add('active');
+
+            audioFiles.forEach(file => {
+                state.playlist.push({
+                    name: file.name.replace(/\.[^/.]+$/, ''),
+                    url: URL.createObjectURL(file),
+                    duration: '--:--'
+                });
+            });
+
+            renderPlaylist();
+            if (state.playlist.length === audioFiles.length) loadSong(0); 
+        }
+
+        fileInput.addEventListener('change', e => { handleFiles(e.target.files); fileInput.value = ''; });
+
+        // Playlist Rendering
+        function renderPlaylist() {
+            playlistEl.innerHTML = '';
+            const frag = document.createDocumentFragment();
+
+            state.playlist.forEach((song, i) => {
+                const div = document.createElement('div');
+                div.className = 'playlist-item' + (i === state.currentIndex ? ' active' : '');
+                div.innerHTML = `
+                    <div class="title">${song.name}</div>
+                    <div class="duration">${song.duration}</div>
+                `;
+                div.addEventListener('click', () => loadSong(i));
+                frag.appendChild(div);
+            });
+            playlistEl.appendChild(frag);
+        }
+
+        // Song Logic
+        function loadSong(index) {
+            if (index < 0 || index >= state.playlist.length) return;
+            state.currentIndex = index;
+            const song = state.playlist[index];
+
+            audio.src = song.url;
+            audio.load();
+
+            currentTitle.textContent = song.name;
+            vinylTitle.textContent = song.name.length > 20 ? song.name.substring(0, 20) + '...' : song.name;
+            
+            audio.addEventListener('loadedmetadata', () => {
+                song.duration = formatTime(audio.duration);
+                totalTimeEl.textContent = song.duration;
+                renderPlaylist();
+            }, { once: true });
+
+            audio.play().then(() => {
+                state.isPlaying = true;
+                updateUI();
+            }).catch(() => {});
+            
+            renderPlaylist();
+        }
+
+        function playPause() {
+            if (!state.playlist.length) return;
+            if (state.isPlaying) { audio.pause(); state.isPlaying = false; }
+            else { audio.play(); state.isPlaying = true; }
+            updateUI();
+        }
+
+        function nextSong() {
+            if (!state.playlist.length) return;
+            let nextIndex = state.isShuffled 
+                ? Math.floor(Math.random() * state.playlist.length) 
+                : (state.currentIndex + 1) % state.playlist.length;
+            loadSong(nextIndex);
+        }
+
+        function prevSong() {
+            if (!state.playlist.length) return;
+            let prevIndex = state.isShuffled 
+                ? Math.floor(Math.random() * state.playlist.length) 
+                : (state.currentIndex - 1 + state.playlist.length) % state.playlist.length;
+            loadSong(prevIndex);
+        }
+
+        // Progress Updating
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progress.style.width = percent + '%';
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+            }
+        });
+
+        // Seek (Click on Progress Bar)
+        progressBarContainer.addEventListener('click', (e) => {
+            if (!audio.duration) return;
+            const rect = progressBarContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            const clickRatio = clickX / width;
+            audio.currentTime = clickRatio * audio.duration;
+        });
+
+        // Loop / Next on End
+        audio.addEventListener('ended', () => {
+            if (state.isRepeated) {
+                audio.currentTime = 0;
+                audio.play();
+            } else {
+                nextSong();
+            }
+        });
+
+        // UI Updates
+        function updateUI() {
+            iconPlay.style.display = state.isPlaying ? 'none' : 'block';
+            iconPause.style.display = state.isPlaying ? 'block' : 'none';
+
+            if (state.isPlaying) {
+                vinyl.classList.add('spinning');
+                toneArm.classList.add('active');
+            } else {
+                vinyl.classList.remove('spinning');
+                toneArm.classList.remove('active');
+            }
+        }
+
+        // Toggles & Actions
+        playBtn.addEventListener('click', playPause);
+        nextBtn.addEventListener('click', nextSong);
+        prevBtn.addEventListener('click', prevSong);
+
+        shuffleBtn.addEventListener('click', () => {
+            state.isShuffled = !state.isShuffled;
+            shuffleBtn.classList.toggle('active-btn', state.isShuffled);
+        });
+
+        repeatBtn.addEventListener('click', () => {
+            state.isRepeated = !state.isRepeated;
+            repeatBtn.classList.toggle('active-btn', state.isRepeated);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            audio.pause();
+            audio.src = '';
+            state.playlist = [];
+            state.isPlaying = false;
+            updateUI();
+            player.classList.remove('active');
+            uploadArea.style.display = 'block';
+        });
+
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds === Infinity) return '0:00';
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>
